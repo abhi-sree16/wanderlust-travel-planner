@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderlust | Premium Tourist Guide</title>
+    <meta name="description"
+        content="Explore the world's most beautiful destinations, filter by your preferences, and plan your next adventure with Wanderlust.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+
+    <!-- Boxicons for Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">Wander<span>lust</span></a>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-target="home">Home</a></li>
+                <li><a href="#" data-target="destinations">Destinations</a></li>
+                <li><a href="#" data-target="contact">Book Trip</a></li>
+                <li><a href="#" data-target="suggestions">Suggestions</a></li>
+                <li><a href="admin.html" target="_blank" style="color: var(--accent);"><i class='bx bx-lock-alt'></i>
+                        Admin</a></li>
+                <li class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
+                    <i class='bx bx-moon'></i>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <i class='bx bx-menu'></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+
+        <!-- HOME SECTION -->
+        <section id="home" class="page-section active-section">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Discover Your Next <br> <span class="highlight">Great Adventure</span></h1>
+                    <p>Explore breathtaking destinations, filter by your interests, and get ready to create memories
+                        that will last a lifetime.</p>
+                    <div class="hero-search">
+                        <input type="text" id="hero-search-input" placeholder="Where do you want to go?">
+                        <button id="hero-search-btn"><i class='bx bx-search'></i> Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-preview">
+                <h2>Featured Categories</h2>
+                <div class="categories-grid">
+                    <div class="category-card" data-category="adventure">
+                        <i class='bx bx-walk'></i>
+                        <h3>Adventure</h3>
+                    </div>
+                    <div class="category-card" data-category="beach">
+                        <i class='bx bx-water'></i>
+                        <h3>Beaches</h3>
+                    </div>
+                    <div class="category-card" data-category="city">
+                        <i class='bx bx-building'></i>
+                        <h3>City Life</h3>
+                    </div>
+                    <div class="category-card" data-category="devotional">
+                        <i class='bx bxs-bell-ring'></i>
+                        <h3>Devotional</h3>
+                    </div>
+                    <div class="category-card" data-category="historical">
+                        <i class='bx bxs-bank'></i>
+                        <h3>Historical</h3>
+                    </div>
+                    <div class="category-card" data-category="mountain">
+                        <i class='bx bx-landscape'></i>
+                        <h3>Mountains</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DESTINATIONS SECTION -->
+        <section id="destinations" class="page-section">
+            <div class="destinations-header">
+                <h2>Explore Destinations</h2>
+                <p>Find the perfect spot for your next vacation.</p>
+            </div>
+
+            <div class="destinations-controls">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="favorites" style="font-weight:700; color:var(--text-main);">Favorites <i class='bx bxs-heart' style="color: #ef4444; vertical-align: middle;"></i></button>
+                    <button class="filter-btn" data-filter="adventure">Adventure</button>
+                    <button class="filter-btn" data-filter="beach">Beach</button>
+                    <button class="filter-btn" data-filter="city">City</button>
+                    <button class="filter-btn" data-filter="devotional">Devotional</button>
+                    <button class="filter-btn" data-filter="historical">Historical</button>
+                    <button class="filter-btn" data-filter="mountain">Mountain</button>
+                </div>
+
+                <div class="search-group">
+                    <i class='bx bx-search'></i>
+                    <input type="text" id="dest-search" placeholder="Search places...">
+                </div>
+            </div>
+
+            <div class="destinations-grid" id="destinations-grid">
+                <!-- Cards will be injected here via JavaScript -->
+            </div>
+        </section>
+
+        <!-- MAP SECTION -->
+        <section class="map-section">
+            <div class="map-header">
+                <h2>Destinations Map</h2>
+                <p style="color: var(--text-muted);">Explore our locations around the globe.</p>
+            </div>
+            <div id="dest-map"></div>
+        </section>
+
+        <!-- SUGGESTIONS SECTION -->
+        <section id="suggestions" class="page-section">
+            <div class="contact-container" style="margin-bottom: 3rem;">
+                <div class="contact-info">
+                    <h2>We Value Your Feedback</h2>
+                    <p>Have an idea to improve our service? Or a new destination suggestion? We would love to hear from you!</p>
+                </div>
+                <div class="contact-form-wrapper">
+                    <form id="suggestion-form">
+                        <div class="form-group">
+                            <label for="sugg-name">Name</label>
+                            <input type="text" id="sugg-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sugg-email">Email</label>
+                            <input type="email" id="sugg-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sugg-message">Your Suggestion</label>
+                            <textarea id="sugg-message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" style="background: var(--accent);">Submit Suggestion <i class='bx bx-bulb'></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT / FEEDBACK SECTION -->
+        <section id="contact" class="page-section">
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h2>Book Your Next Adventure</h2>
+                    <p>Have a destination in mind or a general inquiry? Drop us a message and we'll start planning your
+                        dream trip!</p>
+                    <div class="info-item">
+                        <i class='bx bx-envelope'></i>
+                        <span>hello@wanderlust.com</span>
+                    </div>
+                    <div class="info-item">
+                        <i class='bx bx-map'></i>
+                        <span>123 Explorer's Ave, World</span>
+                    </div>
+                </div>
+                <div class="contact-form-wrapper">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="destination">Destination of Interest</label>
+                            <select id="destination" required>
+                                <option value="" disabled selected>Select a destination</option>
+                                <option value="General Inquiry">General / Other Inquiry</option>
+                                <!-- JS will populate options -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Send Message <i class='bx bx-send'></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Destination Details -->
+    <div id="destination-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body" id="modal-body">
+                <!-- Modal content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Message sent successfully!</div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
