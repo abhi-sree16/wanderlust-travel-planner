@@ -296,7 +296,7 @@ const destinationsData = [
         reviews: 1200,
         price: "₹18,500",
         duration: "8 Days / 7 Nights",
-        image: "https://images.unsplash.com/photo-1522045585573-0f723ea629b3?w=800&q=80",
+        image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
         description: "A high-altitude glacial lake trek in the Uttarakhand Himalayas. Famous for the mysterious skeletal remains found at the edge of the lake, challenging terrains, and incredible alpine views.",
         accommodation: "Tents and campsites during the trek.",
         transport: "Trek on foot, drive to Lohajung basecamp.",
