@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Wanderlust</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <!-- Boxicons for Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #0f172a;
+            --accent: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --font-sans: 'Outfit', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .dashboard-header h1 {
+            font-family: var(--font-serif);
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .inquiries-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: var(--secondary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #fecaca;
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // Simple client-side protection for the college project
+        const adminPassword = prompt("Secure Area. Please enter the Admin Password:");
+        if (adminPassword !== "admin123") {
+            alert("Access Denied! Incorrect password.");
+            window.location.href = "index.html"; // Redirect back to home
+        }
+    </script>
+
+    <div class="dashboard-header">
+        <h1><i class='bx bxs-dashboard'></i> Admin Dashboard</h1>
+        <a href="index.html" class="back-link"><i class='bx bx-left-arrow-alt'></i> Back to Website</a>
+    </div>
+
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <h3>Total Inquiries</h3>
+            <div class="value" id="total-count">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Most Popular Destination</h3>
+            <div class="value" id="popular-dest" style="font-size: 1.5rem; margin-top: 10px;">-</div>
+        </div>
+    </div>
+
+    <div class="inquiries-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Destination</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="inquiries-body">
+                <!-- Injected via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dashboard-header" style="margin-top: 2rem;">
+        <h1><i class='bx bx-plus-circle'></i> Add New Destination</h1>
+    </div>
+    <div class="inquiries-container" style="padding: 2rem;">
+        <form id="add-destination-form" style="display: grid; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="font-weight: 500;">Title</label>
+                    <input type="text" id="dest-title" required style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+                <div>
+                    <label style="font-weight: 500;">Location</label>
+                    <input type="text" id="dest-location" required style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="font-weight: 500;">Category</label>
+                    <select id="dest-category" required style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem; background: white;">
+                        <option value="adventure">Adventure</option>
+                        <option value="beach">Beach</option>
+                        <option value="city">City</option>
+                        <option value="devotional">Devotional</option>
+                        <option value="historical">Historical</option>
+                        <option value="mountain">Mountain</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: 500;">Price</label>
+                    <input type="text" id="dest-price" placeholder="e.g. ₹10,000" required style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+                <div>
+                    <label style="font-weight: 500;">Image URL</label>
+                    <input type="text" id="dest-img" placeholder="https://..." required style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+            </div>
+            <div>
+                <label style="font-weight: 500;">Description</label>
+                <textarea id="dest-desc" rows="3" required style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem; font-family: var(--font-sans);"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="font-weight: 500;">Accommodation</label>
+                    <input type="text" id="dest-acc" placeholder="Accommodation details" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+                <div>
+                    <label style="font-weight: 500;">Accommodation Image URL</label>
+                    <input type="text" id="dest-acc-img" placeholder="https://..." style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="font-weight: 500;">Transport</label>
+                    <input type="text" id="dest-trans" placeholder="Transport details" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+                <div>
+                    <label style="font-weight: 500;">Transport Image URL</label>
+                    <input type="text" id="dest-trans-img" placeholder="https://..." style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label style="font-weight: 500;">Food</label>
+                    <input type="text" id="dest-food" placeholder="Food details" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+                <div>
+                    <label style="font-weight: 500;">Food Image URL</label>
+                    <input type="text" id="dest-food-img" placeholder="https://..." style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; margin-top: 0.3rem;">
+                </div>
+            </div>
+            <button type="submit" style="background: var(--primary); color: white; padding: 0.8rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: background 0.3s;">Add Destination</button>
+        </form>
+    </div>
+
+    <script>
+        function loadSettings() {
+            const tbody = document.getElementById('inquiries-body');
+            const inquiriesList = JSON.parse(localStorage.getItem('inquiries')) || [];
+
+            document.getElementById('total-count').innerText = inquiriesList.length;
+
+            if (inquiriesList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">No inquiries have been submitted yet.</div></td></tr>`;
+                return;
+            }
+
+            // Calculate popular dest
+            const destCounts = {};
+            inquiriesList.forEach(ing => {
+                const dest = ing.destination;
+                if (dest && dest !== "General Inquiry") {
+                    destCounts[dest] = (destCounts[dest] || 0) + 1;
+                }
+            });
+            let popular = "-";
+            let max = 0;
+            for (const [dest, count] of Object.entries(destCounts)) {
+                if (count > max) { max = count; popular = dest; }
+            }
+            document.getElementById('popular-dest').innerText = popular;
+
+            // Render table top to bottom (newest first)
+            tbody.innerHTML = inquiriesList.reverse().map(inquiry => `
+                <tr>
+                    <td style="white-space:nowrap; color: var(--text-muted);">${inquiry.date}</td>
+                    <td style="font-weight: 500;">${inquiry.name}</td>
+                    <td><a href="mailto:${inquiry.email}" style="color:var(--primary);">${inquiry.email}</a></td>
+                    <td><span style="background:var(--bg-color); padding:0.2rem 0.5rem; border-radius:4px; border:1px solid var(--border);">${inquiry.destination}</span></td>
+                    <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${inquiry.message}">${inquiry.message}</td>
+                    <td><span class="status-badge">New Lead</span></td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteInquiry(${inquiry.id})" title="Delete lead">
+                            <i class='bx bx-trash'></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.deleteInquiry = function (id) {
+            if (confirm('Are you sure you want to delete this lead?')) {
+                let inquiriesList = JSON.parse(localStorage.getItem('inquiries')) || [];
+                inquiriesList = inquiriesList.filter(item => item.id !== id);
+                localStorage.setItem('inquiries', JSON.stringify(inquiriesList));
+                loadSettings();
+            }
+        }
+
+        // Add Destination Logic
+        document.getElementById('add-destination-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customDestinations = JSON.parse(localStorage.getItem('customDestinations')) || [];
+            const newDest = {
+                id: Date.now(),
+                title: document.getElementById('dest-title').value,
+                location: document.getElementById('dest-location').value,
+                category: document.getElementById('dest-category').value,
+                price: document.getElementById('dest-price').value,
+                image: document.getElementById('dest-img').value,
+                description: document.getElementById('dest-desc').value,
+                accommodation: document.getElementById('dest-acc').value,
+                acc_img: document.getElementById('dest-acc-img').value,
+                transport: document.getElementById('dest-trans').value,
+                trans_img: document.getElementById('dest-trans-img').value,
+                food: document.getElementById('dest-food').value,
+                food_img: document.getElementById('dest-food-img').value,
+                rating: 5.0,
+                reviews: 0,
+                duration: "Custom Trip",
+                userReviews: []
+            };
+            customDestinations.push(newDest);
+            localStorage.setItem('customDestinations', JSON.stringify(customDestinations));
+            alert('Destination Added Successfully! It will now appear on the main website.');
+            this.reset();
+        });
+
+        loadSettings();
+    </script>
+</body>
+
+</html>
