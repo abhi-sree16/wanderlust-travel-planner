@@ -14,8 +14,15 @@ type Filters = {
 
 const defaultFilters: Filters = { region: 'All', budget: 'All', style: 'All', rating: 0 };
 
-export default function DestinationExplorer({ onRequireAuth }: { onRequireAuth: () => void }) {
-  const [query, setQuery] = useState('');
+export default function DestinationExplorer({
+  searchQuery,
+  setSearchQuery,
+  onRequireAuth,
+}: {
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  onRequireAuth: () => void;
+}) {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [selected, setSelected] = useState<Destination | null>(null);
@@ -25,7 +32,7 @@ export default function DestinationExplorer({ onRequireAuth }: { onRequireAuth: 
   const styleOptions = ['All', 'Beaches', 'Mountains', 'Cities', 'Cultural', 'Islands', 'Deserts'];
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = searchQuery.trim().toLowerCase();
     return allDestinations.filter((d) => {
       if (filters.region !== 'All' && d.region !== filters.region) return false;
       if (filters.budget !== 'All' && d.budgetTier !== filters.budget) return false;
@@ -37,7 +44,7 @@ export default function DestinationExplorer({ onRequireAuth }: { onRequireAuth: 
       }
       return true;
     });
-  }, [query, filters]);
+  }, [searchQuery, filters]);
 
   const activeFilterCount = [
     filters.region !== 'All',
@@ -48,7 +55,7 @@ export default function DestinationExplorer({ onRequireAuth }: { onRequireAuth: 
 
   const resetFilters = () => {
     setFilters(defaultFilters);
-    setQuery('');
+    setSearchQuery('');
   };
 
   return (
@@ -70,16 +77,16 @@ export default function DestinationExplorer({ onRequireAuth }: { onRequireAuth: 
             <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, country, or activity..."
               aria-label="Search destinations"
               data-testid="explorer-search-input"
               className="w-full rounded-2xl border border-stone-200 bg-white py-3.5 pl-12 pr-4 text-sm font-medium text-stone-800 transition-all placeholder:text-stone-400 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-100"
             />
-            {query && (
+            {searchQuery && (
               <button
-                onClick={() => setQuery('')}
+                onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-600"
                 aria-label="Clear search"
                 data-testid="explorer-search-clear"

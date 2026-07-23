@@ -1,12 +1,14 @@
-import { useState } from 'react';
 import { Search, MapPin, Calendar, Users, ChevronDown } from 'lucide-react';
 
 const categories = ['All', 'Beaches', 'Mountains', 'Cities', 'Cultural', 'Islands', 'Deserts'];
 
-export default function DestinationSearch() {
-  const [category, setCategory] = useState('All');
-  const [location, setLocation] = useState('');
-
+export default function DestinationSearch({
+  searchQuery,
+  setSearchQuery,
+}: {
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+}) {
   return (
     <section id="search" className="relative z-20 -mt-12 lg:-mt-16">
       <div className="section-shell">
@@ -34,9 +36,9 @@ export default function DestinationSearch() {
                 <input
                   id="search-location"
                   type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Santorini, Bali..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="e.g. Santorini, Bali, Japan..."
                   data-testid="search-location-input"
                   className="w-full rounded-2xl border border-stone-200 bg-stone-50 py-3.5 pl-12 pr-4 text-sm font-medium text-stone-800 transition-all placeholder:text-stone-400 focus:border-primary-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-100"
                 />
@@ -80,7 +82,7 @@ export default function DestinationSearch() {
 
             <div className="flex items-end">
               <button
-                onClick={() => document.querySelector('#destinations')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => document.querySelector('#explorer')?.scrollIntoView({ behavior: 'smooth' })}
                 className="btn-primary w-full"
                 data-testid="search-submit"
               >
@@ -95,13 +97,8 @@ export default function DestinationSearch() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setCategory(cat)}
                 data-testid={`search-category-${cat.toLowerCase()}`}
-                className={`chip ${
-                  category === cat
-                    ? 'border-primary-600 bg-primary-600 text-white'
-                    : 'border-stone-200 bg-stone-50 text-stone-600 hover:border-primary-300 hover:text-primary-700'
-                }`}
+                className="chip border-stone-200 bg-stone-50 text-stone-600 hover:border-primary-300 hover:text-primary-700"
               >
                 {cat}
               </button>

@@ -1,98 +1,118 @@
-import { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useState, useEffect, useCallback } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import DestinationSearch from '@/components/DestinationSearch';
 import FeaturedDestinations from '@/components/FeaturedDestinations';
 import DestinationExplorer from '@/components/DestinationExplorer';
+import DestinationDetail from '@/components/DestinationDetail';
 import PopularExperiences from '@/components/PopularExperiences';
 import TravelInspiration from '@/components/TravelInspiration';
 import Footer from '@/components/Footer';
 import TravelAssistant from '@/components/TravelAssistant';
 import AuthModal from '@/components/AuthModal';
 import Dashboard from '@/components/Dashboard';
+import TripPlannerModal from '@/components/TripPlannerModal';
+import { useAuth } from '@/context/AuthContext';
+import type { Destination } from '@/lib/types';
 
-type View = 'home' | 'dashboard';
-
-function AppContent() {
+export default function App() {
   const { user } = useAuth();
-  const [view, setView] = useState<View>('home');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
   const [authModal, setAuthModal] = useState<{ open: boolean; mode: 'login' | 'signup' }>({
     open: false,
     mode: 'login',
   });
+  const [tripPlannerDest, setTripPlannerDest] = useState<Destination | null>(null);
+  const [view, setView] = useState<'home' | 'dashboard'>('home');
 
-  const openAuth = (mode: 'login' | 'signup') => setAuthModal({ open: true, mode });
-  const closeAuth = () => setAuthModal({ open: false, mode: 'login' });
+  const requireAuth = useCallback(() => {
+    setAuthModal({ open: true, mode: 'login' });
+  }, []);
 
-  const requireAuth = () => openAuth('login');
+  const goHome = useCallback(() => {
+    setView('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
-  const goToDashboard = () => {
+  const goDashboard = useCallback(() => {
     if (!user) {
-      openAuth('login');
+      requireAuth();
       return;
     }
     setView('dashboard');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [user, requireAuth]);
 
-  const goToHome = () => {
-    setView('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const navigateToSection = useCallback((section: string) => {
+    if (view === 'dashboard') setView('home');
+    setTimeout(() => {
+      const el = document.getElementById(section);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }, [view]);
 
   useEffect(() => {
-    if (authModal.open) {
+    if (selectedDest || authModal.open || tripPlannerDest) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [authModal.open]);
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedDest, authModal.open, tripPlannerDest]);
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-white">
       <Navbar
-        onAuthClick={openAuth}
-        onDashboard={goToDashboard}
-        onHome={goToHome}
+        onAuthClick={(mode) => setAuthModal({ open: true, mode })}
+        onDashboard={goDashboard}
+        onHome={goHome}
       />
 
-      {view === 'home' && (
+      {view === 'dashboard' && user ? (
+        <Dashboard onNavigate={(s) => (s === 'home' ? goHome() : navigateToSection(s))} />
+      ) : (
         <main>
           <Hero />
-          <DestinationSearch />
+          <DestinationSearch
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
           <FeaturedDestinations onRequireAuth={requireAuth} />
-          <DestinationExplorer onRequireAuth={requireAuth} />
+          <DestinationExplorer
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onRequireAuth={requireAuth}
+          />
           <PopularExperiences />
           <TravelInspiration />
-        </main>
-      )}
-
-      {view === 'dashboard' && user && (
-        <main>
-          <Dashboard onNavigate={(section) => { if (section === 'home') goToHome(); }} />
         </main>
       )}
 
       <Footer />
       <TravelAssistant />
 
+      {selectedDest && (
+        <DestinationDetail
+          dest={selectedDest}
+          onClose={() => setSelectedDest(null)}
+          onRequireAuth={requireAuth}
+        />
+      )}
+
+      <TripPlannerModal
+        open={!!tripPlannerDest}
+        dest={tripPlannerDest}
+        onClose={() => setTripPlannerDest(null)}
+        onRequireAuth={requireAuth}
+        onSaved={() => {}}
+      />
+
       <AuthModal
         open={authModal.open}
         mode={authModal.mode}
-        onClose={closeAuth}
+        onClose={() => setAuthModal({ open: false, mode: 'login' })}
       />
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   );
 }
