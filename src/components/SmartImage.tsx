@@ -1,24 +1,27 @@
 import { useState } from 'react';
 
-type SmartImageProps = {
+export default function SmartImage({
+  src,
+  alt,
+  className = '',
+  loading = 'lazy',
+}: {
   src: string;
   alt: string;
   className?: string;
   loading?: 'lazy' | 'eager';
-};
-
-export default function SmartImage({ src, alt, className = '', loading = 'lazy' }: SmartImageProps) {
+}) {
   const [loaded, setLoaded] = useState(false);
-  const [errored, setErrored] = useState(false);
+  const [error, setError] = useState(false);
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
-      {!loaded && !errored && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-stone-200 via-stone-100 to-stone-200" />
+      {!loaded && !error && (
+        <div className="absolute inset-0 animate-pulse bg-stone-200" />
       )}
-      {errored ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-100 via-primary-50 to-secondary-50">
-          <span className="font-serif text-lg italic text-primary-400">Wanderlust</span>
+      {error ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-stone-100">
+          <span className="text-sm text-stone-400">Image unavailable</span>
         </div>
       ) : (
         <img
@@ -26,9 +29,9 @@ export default function SmartImage({ src, alt, className = '', loading = 'lazy' 
           alt={alt}
           loading={loading}
           onLoad={() => setLoaded(true)}
-          onError={() => setErrored(true)}
-          className={`h-full w-full object-cover transition-all duration-700 ${
-            loaded ? 'scale-100 opacity-100 blur-0' : 'scale-105 opacity-0 blur-xl'
+          onError={() => setError(true)}
+          className={`h-full w-full object-cover transition-opacity duration-500 ${
+            loaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
       )}

@@ -212,11 +212,10 @@ export default function DestinationExplorer({
           </div>
         ) : (
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((dest, idx) => (
+            {filtered.map((dest) => (
               <DestinationCard
                 key={dest.id}
                 dest={dest}
-                index={idx}
                 onView={setSelected}
               />
             ))}

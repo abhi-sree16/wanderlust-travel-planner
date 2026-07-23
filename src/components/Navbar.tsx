@@ -40,7 +40,7 @@ export default function Navbar({
     >
       <nav className="section-shell flex items-center justify-between py-4">
         <button onClick={onHome} className="flex items-center gap-2.5" data-testid="navbar-logo">
-          <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white transition-transform hover:scale-105`}>
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 text-white transition-transform hover:scale-105">
             <Compass className="h-5 w-5" strokeWidth={2.2} />
           </span>
           <span className={`font-serif text-2xl font-bold transition-colors ${scrolled ? 'text-stone-900' : 'text-white'}`}>

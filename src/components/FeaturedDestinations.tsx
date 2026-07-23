@@ -31,8 +31,8 @@ export default function FeaturedDestinations({ onRequireAuth }: { onRequireAuth:
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((dest, idx) => (
-            <DestinationCard key={dest.id} dest={dest} index={idx} onView={setSelected} />
+          {featured.map((dest) => (
+            <DestinationCard key={dest.id} dest={dest} onView={setSelected} />
           ))}
         </div>
       </div>

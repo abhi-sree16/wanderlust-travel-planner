@@ -1,29 +1,36 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '@/lib/types';
 import * as store from '@/lib/store';
 
-type AuthContextValue = {
+interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string) => { error: string | null };
+  signUp: (email: string, password: string, fullName: string) => { error: string | null };
   signOut: () => void;
-};
+}
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => store.getSession());
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
-    const { error, user: u } = store.signUp(email, password, fullName);
-    if (u) setUser(u);
+  useEffect(() => {
+    const session = store.getSession();
+    setUser(session);
+    setLoading(false);
+  }, []);
+
+  const signIn = (email: string, password: string) => {
+    const { user, error } = store.signIn(email, password);
+    if (user) setUser(user);
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error, user: u } = store.signIn(email, password);
-    if (u) setUser(u);
+  const signUp = (email: string, password: string, fullName: string) => {
+    const { user, error } = store.signUp(email, password, fullName);
+    if (user) setUser(user);
     return { error };
   };
 
@@ -33,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading: false, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

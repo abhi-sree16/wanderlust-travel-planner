@@ -4,26 +4,20 @@ import Hero from '@/components/Hero';
 import DestinationSearch from '@/components/DestinationSearch';
 import FeaturedDestinations from '@/components/FeaturedDestinations';
 import DestinationExplorer from '@/components/DestinationExplorer';
-import DestinationDetail from '@/components/DestinationDetail';
 import PopularExperiences from '@/components/PopularExperiences';
 import TravelInspiration from '@/components/TravelInspiration';
 import Footer from '@/components/Footer';
 import TravelAssistant from '@/components/TravelAssistant';
 import AuthModal from '@/components/AuthModal';
 import Dashboard from '@/components/Dashboard';
-import TripPlannerModal from '@/components/TripPlannerModal';
 import { useAuth } from '@/context/AuthContext';
-import type { Destination } from '@/lib/types';
-
 export default function App() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
   const [authModal, setAuthModal] = useState<{ open: boolean; mode: 'login' | 'signup' }>({
     open: false,
     mode: 'login',
   });
-  const [tripPlannerDest, setTripPlannerDest] = useState<Destination | null>(null);
   const [view, setView] = useState<'home' | 'dashboard'>('home');
 
   const requireAuth = useCallback(() => {
@@ -53,13 +47,13 @@ export default function App() {
   }, [view]);
 
   useEffect(() => {
-    if (selectedDest || authModal.open || tripPlannerDest) {
+    if (authModal.open) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [selectedDest, authModal.open, tripPlannerDest]);
+  }, [authModal.open]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -91,22 +85,6 @@ export default function App() {
 
       <Footer />
       <TravelAssistant />
-
-      {selectedDest && (
-        <DestinationDetail
-          dest={selectedDest}
-          onClose={() => setSelectedDest(null)}
-          onRequireAuth={requireAuth}
-        />
-      )}
-
-      <TripPlannerModal
-        open={!!tripPlannerDest}
-        dest={tripPlannerDest}
-        onClose={() => setTripPlannerDest(null)}
-        onRequireAuth={requireAuth}
-        onSaved={() => {}}
-      />
 
       <AuthModal
         open={authModal.open}
