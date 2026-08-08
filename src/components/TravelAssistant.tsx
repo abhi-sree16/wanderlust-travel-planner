@@ -1,5 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { Compass, X, Send, Loader2, Sparkles } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Compass, X, Send, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+
+const AI_ENDPOINT = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/travel-assistant`;
+const AI_HEADERS = {
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+};
 
 type Message = {
   role: 'user' | 'assistant';
@@ -46,7 +52,7 @@ export default function TravelAssistant() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  const send = (text: string) => {
+  const send = useCallback(async (text: string) => {
     const content = text.trim();
     if (!content || state === 'loading') return;
 
@@ -56,13 +62,30 @@ export default function TravelAssistant() {
     setState('loading');
 
     try {
-      const reply = generateLocalReply(content);
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      const response = await fetch(AI_ENDPOINT, {
+        method: 'POST',
+        headers: AI_HEADERS,
+        body: JSON.stringify({ messages: newMessages }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status})`);
+      }
+
+      const data = await response.json();
+
+      if (data.fallback || !data.reply) {
+        throw new Error('AI service unavailable');
+      }
+
+      setMessages((prev) => [...prev, { role: 'assistant', content: data.reply }]);
       setState('idle');
     } catch {
+      const reply = generateLocalReply(content);
+      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
       setState('error');
     }
-  };
+  }, [messages, state]);
 
   return (
     <>
@@ -112,6 +135,12 @@ export default function TravelAssistant() {
                 <div className="rounded-2xl bg-stone-100 px-4 py-2.5">
                   <Loader2 className="h-4 w-4 animate-spin text-stone-500" />
                 </div>
+              </div>
+            )}
+            {state === 'error' && (
+              <div className="flex items-center gap-1.5 px-1 text-xs text-stone-400">
+                <AlertCircle className="h-3 w-3" />
+                AI unavailable — showing basic suggestions
               </div>
             )}
           </div>
