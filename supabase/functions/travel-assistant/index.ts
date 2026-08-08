@@ -39,6 +39,9 @@ Guidelines:
 - Keep responses concise but informative — typically 2-4 sentences unless an itinerary is requested.
 - For itinerary requests, provide a day-by-day breakdown.`;
 
+const GEMINI_MODEL = "gemini-3.6-flash";
+const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
@@ -54,7 +57,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    const apiKey = Deno.env.get("GEMINI_API_KEY");
 
     if (!apiKey) {
       return new Response(
@@ -63,31 +66,33 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const openaiMessages = [
-      { role: "system", content: DESTINATIONS_CONTEXT },
-      ...messages.map((m: { role: string; content: string }) => ({
-        role: m.role === "assistant" ? "assistant" : "user",
-        content: m.content,
-      })),
-    ];
+    // Convert OpenAI-style messages to Gemini format
+    // Gemini uses "user" and "model" roles (not "assistant")
+    const contents = messages.map((m: { role: string; content: string }) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch(`${GEMINI_ENDPOINT}?key=${apiKey}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: openaiMessages,
-        max_tokens: 500,
-        temperature: 0.7,
+        system_instruction: {
+          parts: [{ text: DESTINATIONS_CONTEXT }],
+        },
+        contents,
+        generationConfig: {
+          maxOutputTokens: 1000,
+          temperature: 0.7,
+        },
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error("OpenAI API error:", response.status, errText);
+      console.error("Gemini API error:", response.status, errText);
       return new Response(
         JSON.stringify({ error: "AI provider error", fallback: true }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -95,7 +100,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content;
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!reply) {
       return new Response(
